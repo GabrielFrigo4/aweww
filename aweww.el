@@ -16,7 +16,7 @@
       (goto-char (point-min))
       (while (re-search-forward "\n\\{3,\\}" nil t)
         (replace-match "\n\n")))))
-(add-hook 'aweww-after-render-hook #'aweww-cleanup-newlines)
+(add-hook 'eww-after-render-hook #'aweww-cleanup-newlines)
 
 ;; ################
 ;; # Renders
@@ -30,7 +30,7 @@
   "AWEWW After Section Header")
 
 ;; Restart *EWW After Section Header*
-(add-hook 'aweww-after-render-hook
+(add-hook 'eww-after-render-hook
           (lambda ()
             (setq aweww-after-section-header nil)))
 

@@ -1,8 +1,12 @@
 ;;; aweww.el --- Awesome EWW
 
 ;; ################
-;; # EWW
+;; # EWW / SHR
 ;; ################
+
+;; Require EWW / SHR
+(require 'eww)
+(require 'shr)
 
 ;; Cleanup New Lines
 (defun aweww-cleanup-newlines ()
@@ -17,6 +21,9 @@
 ;; ################
 ;; # Renders
 ;; ################
+
+;; Require DOM
+(require 'dom)
 
 ;; Create *EWW After Section Header*
 (defvar aweww-after-section-header nil
@@ -52,6 +59,10 @@
      (t
       (shr-generic dom)))))
 (add-to-list 'shr-external-rendering-functions '(b . aweww-render-b))
+
+;; ################
+;; # AWEWW
+;; ################
 
 (provide 'aweww)
 

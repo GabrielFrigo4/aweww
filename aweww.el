@@ -64,6 +64,10 @@
 ;; # AWEWW
 ;; ################
 
+;; Alias to AWEWW
+(defalias 'aweww 'eww)
+
+;; Provide *aweww*
 (provide 'aweww)
 
 ;;; aweww.el ends here

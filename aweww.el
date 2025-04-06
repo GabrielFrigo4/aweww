@@ -53,4 +53,6 @@
       (shr-generic dom)))))
 (add-to-list 'shr-external-rendering-functions '(b . aweww-render-b))
 
+(provide 'aweww)
+
 ;;; aweww.el ends here

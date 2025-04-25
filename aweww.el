@@ -1,68 +1,102 @@
 ;;; aweww.el --- Awesome EWW
 
+
 ;; ################
 ;; # EWW / SHR
 ;; ################
 
-;; Require EWW / SHR
+
+;; Require EWW / SHR / DOM
 (require 'eww)
 (require 'shr)
+(require 'dom)
 
-;; Cleanup New Lines
-(defun aweww-cleanup-newlines ()
-  "Remove Excessive Blank Lines in AWEWW Buffers."
-  (let ((inhibit-read-only t))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "\n\\{3,\\}" nil t)
-        (replace-match "\n\n")))))
-(add-hook 'eww-after-render-hook #'aweww-cleanup-newlines)
+;; Require Packages
+(require 'shr-tag-pre-highlight)
+
 
 ;; ################
 ;; # Renders
 ;; ################
 
-;; Require DOM
-(require 'dom)
 
-;; Create *EWW After Section Header*
-(defvar aweww-after-section-header nil
-  "AWEWW After Section Header")
+;; Aweww Trim Code
+(defun aweww-trim-code (string)
+  "Remove Leading and Trailing Lines that Contain only Whitespace, Preserving Internal Formatting."
+  (let* ((lines (split-string string "\n"))
+         (lines (seq-drop-while (lambda (line) (string-match-p "\\`\\s-*\\'" line)) lines))
+         (lines (seq-reverse
+                 (seq-drop-while (lambda (line) (string-match-p "\\`\\s-*\\'" line))
+                                 (seq-reverse lines)))))
+    (mapconcat 'identity lines "\n")))
 
-;; Restart *EWW After Section Header*
-(add-hook 'eww-after-render-hook
-          (lambda ()
-            (setq aweww-after-section-header nil)))
+;; Aweww General Rendering
+(defvar aweww-general-rendering-functions
+  '((title . eww-tag-title)
+    (form . eww-tag-form)
+    (input . eww-tag-input)
+    (button . eww-form-submit)
+    (textarea . eww-tag-textarea)
+    (select . eww-tag-select)
+    (link . eww-tag-link)
+    (meta . eww-tag-meta)
+    (code . shrface-tag-code)
+    (pre . aweww-shr-tag-pre-highlight)))
 
-;; Create <b> Render for EWW / SHR
-(defun aweww-render-b (dom)
-  "Custom <b> rendering for AWEWW: Headers and Body"
-  (let* ((class (dom-attr dom 'class))
-         (text (dom-texts dom)))
-    (cond
-     ;; Section Header: Insert Spacing and New Line
-     ((and class (string= class "section"))
-      (shr-insert "\n\n")
-      (shr-generic dom)
-      (shr-insert "\n\n")
-      (setq aweww-after-section-header t))
-     ;; Bold Text: Indent if at Beginning of Line
-     ((and text
-           (or (string-match-p "^[a-zA-Z0-9_]+$" text)
-               (string-match-p "^#" text)))
-      (when (and (save-excursion (bolp))
-                 (eq aweww-after-section-header t))
-        (shr-insert "     ")
-        (setq aweww-after-section-header nil))
-      (shr-insert (propertize text 'face 'bold)))
-     ;; Fallback
-     (t
-      (shr-generic dom)))))
-(add-to-list 'shr-external-rendering-functions '(b . aweww-render-b))
+;; Aweww Render Advice
+(defun aweww-render-advice (orig-fun &rest args)
+  (require 'eww)
+  (let ((shrface-org nil)
+        (shr-bullet (concat (char-to-string shrface-item-bullet) " "))
+        (shr-width 128)
+        (shr-indentation 0)
+        (shr-external-rendering-functions aweww-general-rendering-functions)
+        (shr-use-fonts nil))
+    (apply orig-fun args)))
+
+;; Aweww TAG Highlight
+(defun aweww-shr-tag-pre-highlight (pre)
+  "Highlighting Code in PRE."
+  (let* ((shr-folding-mode 'none)
+         (shr-current-font 'default)
+         (code (with-temp-buffer
+                 (shr-generic pre)
+                 (indent-rigidly (point-min) (point-max) 0)
+                 (buffer-string)))
+         (lang (or (shr-tag-pre-highlight-guess-language-attr pre)
+                   (let ((sym (language-detection-string code)))
+                     (and sym (symbol-name sym)))))
+         (mode (and lang
+                    (shr-tag-pre-highlight--get-lang-mode lang))))
+    (shr-ensure-newline)
+    (shr-ensure-newline)
+    (setq start (point))
+    (insert
+     (propertize (concat "#+BEGIN_SRC " lang "\n") 'face 'org-block-begin-line)
+     (or (and (fboundp mode)
+              (with-demoted-errors "Error while fontifying: %S"
+                (shr-tag-pre-highlight-fontify (aweww-trim-code code) mode)))
+         (aweww-trim-code code))
+     (format "\n")
+     (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line))
+    (shr-ensure-newline)
+    (setq end (point))
+    (pcase (frame-parameter nil 'background-mode)
+      ('light
+       (add-face-text-property start end '(:background (face-background 'default nil t) :extend t)))
+      ('dark
+       (add-face-text-property start end '(:background (face-background 'default nil t) :extend t))))
+    (shr-ensure-newline)
+    (insert "\n")))
+
+;; Updae EWW Render
+(advice-add 'eww-display-html :around #'aweww-render-advice)
+
 
 ;; ################
 ;; # AWEWW
 ;; ################
+
 
 ;; Alias to AWEWW
 (defalias 'aweww 'eww)

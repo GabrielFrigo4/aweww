@@ -20,6 +20,10 @@
 ;; ################
 
 
+;; Aweww Org Code
+(defvar aweww-org-code-fontify nil
+  "Aweww Org Code Fontify")
+
 ;; Aweww Trim Code
 (defun aweww-trim-code (string)
   "Remove Leading and Trailing Lines that Contain only Whitespace, Preserving Internal Formatting."
@@ -41,7 +45,8 @@
     (link . eww-tag-link)
     (meta . eww-tag-meta)
     (code . shrface-tag-code)
-    (pre . aweww-shr-tag-pre-highlight)))
+    (pre . aweww-shr-tag-pre-highlight))
+  "Aweww General Rendering Functions")
 
 ;; Aweww Render Advice
 (defun aweww-render-advice (orig-fun &rest args)
@@ -72,14 +77,15 @@
     (shr-ensure-newline)
     (setq start (point))
     (insert
-     (propertize (concat "#+BEGIN_SRC " lang "\n") 'face 'org-block-begin-line)
-     (propertize (concat (aweww-trim-code code) "\n") 'face 'org-block)
-     ;;(or (and (fboundp mode)
-     ;;         (with-demoted-errors "Error while fontifying: %S"
-     ;;           (shr-tag-pre-highlight-fontify (propertize (aweww-trim-code code) 'face 'org-block) mode)))
-     ;;    (propertize (concat (aweww-trim-code code) "\n") 'face 'org-block))
-     (format "\n")
-     (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line))
+     (if aweww-org-code-fontify
+         ((propertize (concat "#+BEGIN_SRC " lang "\n") 'face 'org-block-begin-line)
+          (or (and (fboundp mode)
+                   (with-demoted-errors "Error while fontifying: %S"
+                     (shr-tag-pre-highlight-fontify (propertize (aweww-trim-code code) 'face 'org-block) mode)))
+              (propertize (aweww-trim-code code) 'face 'org-block))
+          (format "\n")
+          (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line)))
+     ((aweww-trim-code code)))
     (shr-ensure-newline)
     (setq end (point))
     (pcase (frame-parameter nil 'background-mode)

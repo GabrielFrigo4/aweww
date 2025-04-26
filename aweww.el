@@ -84,8 +84,7 @@
                     (with-demoted-errors "Error while fontifying: %S"
                       (shr-tag-pre-highlight-fontify (propertize (aweww-trim-code code) 'face 'org-block) mode)))
                (propertize (aweww-trim-code code) 'face 'org-block))
-           (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line)))
-     (aweww-trim-code code))
+           (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line))))
     (shr-ensure-newline)
     (setq end (point))
     (pcase (frame-parameter nil 'background-mode)

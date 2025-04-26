@@ -75,8 +75,8 @@
      (propertize (concat "#+BEGIN_SRC " lang "\n") 'face 'org-block-begin-line)
      (or (and (fboundp mode)
               (with-demoted-errors "Error while fontifying: %S"
-                (shr-tag-pre-highlight-fontify (aweww-trim-code code) mode)))
-         (aweww-trim-code code))
+                (shr-tag-pre-highlight-fontify (propertize (aweww-trim-code code) 'face 'org-block) mode)))
+         (propertize (aweww-trim-code code) 'face 'org-block))
      (format "\n")
      (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line))
     (shr-ensure-newline)

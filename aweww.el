@@ -78,14 +78,14 @@
     (setq start (point))
     (insert
      (if aweww-org-code-fontify
-         ((propertize (concat "#+BEGIN_SRC " lang "\n") 'face 'org-block-begin-line)
-          (or (and (fboundp mode)
-                   (with-demoted-errors "Error while fontifying: %S"
-                     (shr-tag-pre-highlight-fontify (propertize (aweww-trim-code code) 'face 'org-block) mode)))
-              (propertize (aweww-trim-code code) 'face 'org-block))
-          (format "\n")
-          (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line)))
-     ((aweww-trim-code code)))
+         (progn
+           (propertize (concat "#+BEGIN_SRC " lang "\n") 'face 'org-block-begin-line)
+           (or (and (fboundp mode)
+                    (with-demoted-errors "Error while fontifying: %S"
+                      (shr-tag-pre-highlight-fontify (propertize (aweww-trim-code code) 'face 'org-block) mode)))
+               (propertize (aweww-trim-code code) 'face 'org-block))
+           (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line)))
+     (aweww-trim-code code))
     (shr-ensure-newline)
     (setq end (point))
     (pcase (frame-parameter nil 'background-mode)

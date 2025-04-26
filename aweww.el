@@ -1,5 +1,9 @@
 ;;; aweww.el --- Awesome EWW
 
+;; TODO
+;; [ ] Improve Dark / Light Themes
+;; [ ] Improve HTML Rendering Indentation
+;; [ ] Improve Code Highlight Scope
 
 ;; ################
 ;; # EWW / SHR

@@ -85,7 +85,7 @@
                       (shr-tag-pre-highlight-fontify (propertize (aweww-trim-code code) 'face 'org-block) mode)))
                (propertize (aweww-trim-code code) 'face 'org-block))
            (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line))
-       (propertize (aweww-trim-code code) 'face 'org-block)))
+       (aweww-trim-code code)))
     (shr-ensure-newline)
     (setq end (point))
     (pcase (frame-parameter nil 'background-mode)

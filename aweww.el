@@ -69,9 +69,9 @@
     (apply orig-fun args)))
 
 ;; Updae EWW Render
+(advice-add 'eww-display-html :after #'aweww-cleanup-after-eww)
 (advice-add 'eww-display-html :around #'aweww-render-advice)
 (add-hook 'eww-after-render-hook #'shrface-eww-setup)
-(add-hook 'eww-after-render-hook #'aweww-cleanup-newlines)
 
 
 ;; ################

@@ -38,6 +38,11 @@
       (while (re-search-forward "\n\\{3,\\}" nil t)
         (replace-match "\n\n")))))
 
+(defun aweww-cleanup-after-eww (&rest _args)
+  "Cleanup newlines after EWW renders HTML."
+  (when (eq major-mode 'eww-mode)
+    (aweww-cleanup-newlines)))
+
 ;; Setup Shrface in EWW
 (defun shrface-eww-setup ()
   (unless shrface-toggle-bullets
@@ -69,7 +74,7 @@
     (apply orig-fun args)))
 
 ;; Updae EWW Render
-(advice-add 'eww-display-html :after #'aweww-cleanup-newlines)
+(advice-add 'eww-display-html :after #'aweww-cleanup-after-eww)
 (advice-add 'eww-display-html :around #'aweww-render-advice)
 (add-hook 'eww-after-render-hook #'shrface-eww-setup)
 

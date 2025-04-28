@@ -29,9 +29,6 @@
 ;; Import SHRFACE
 (require 'shrface)
 
-;; Import ElDoc-Box
-(require 'eldoc-box)
-
 ;; Cleanup New Lines
 (defun aweww-cleanup-newlines ()
   "Remove Excessive Blank Lines in AWEWW Buffers."
@@ -42,9 +39,9 @@
         (replace-match "\n\n")))))
 
 ;; Setup Shrface in EWW
-(defun shrface-eww-setup ()
-  (unless shrface-toggle-bullets
-    (shrface-regexp)))
+;;(defun shrface-eww-setup ()
+;;  (unless shrface-toggle-bullets
+;;    (shrface-regexp)))
 
 ;; Aweww General Rendering
 (defvar aweww-general-rendering-functions
@@ -74,9 +71,7 @@
 
 ;; Updae EWW Render
 (advice-add 'eww-display-html :around #'aweww-render-advice)
-(add-hook 'eww-after-render-hook #'eldoc-mode)
-(add-hook 'eww-after-render-hook #'eldoc-box-hover-mode)
-(add-hook 'eww-after-render-hook #'shrface-eww-setup)
+;;(add-hook 'eww-after-render-hook #'shrface-eww-setup)
 (add-hook 'eww-after-render-hook #'aweww-cleanup-newlines)
 
 

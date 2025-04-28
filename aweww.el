@@ -38,7 +38,7 @@
       (while (re-search-forward "\n\\{3,\\}" nil t)
         (replace-match "\n\n")))))
 
-
+;; Cleanup New Lines Deferred
 (defun aweww-cleanup-newlines-deferred ()
   "Defer cleanup until after EWW finishes rendering."
   (run-at-time 0 nil #'aweww-cleanup-newlines))
@@ -48,7 +48,7 @@
   (unless shrface-toggle-bullets
     (shrface-regexp)))
 
-;; Aweww General Rendering
+;; AWEWW General Rendering
 (defvar aweww-general-rendering-functions
   (append '((title . eww-tag-title)
             (form . eww-tag-form)
@@ -63,18 +63,20 @@
           shrface-supported-faces-alist)
   "Aweww General Rendering Functions")
 
-;; Aweww Render Advice
-(defun aweww-render-advice (orig-fun &rest args)
-  (let ((shrface-org nil)
-        (shr-bullet (concat (char-to-string shrface-item-bullet) " "))
-        (shr-width 128)
-        (shr-indentation 0)
-        (shr-external-rendering-functions aweww-general-rendering-functions)
-        (shr-use-fonts nil))
-    (apply orig-fun args)))
+;; Enable Shrface in AWEWW
+(setq-default shr-external-rendering-functions aweww-general-rendering-functions)
+
+;; AWEWW Render Advice
+;;(defun aweww-render-advice (orig-fun &rest args)
+;;  (let ((shrface-org nil)
+;;        (shr-bullet (concat (char-to-string shrface-item-bullet) " "))
+;;        (shr-width 128)
+;;        (shr-indentation 0)
+;;        (shr-external-rendering-functions aweww-general-rendering-functions)
+;;        (shr-use-fonts nil))
+;;    (apply orig-fun args)))
 
 ;; Updae EWW Render
-(advice-add 'eww-display-html :around #'aweww-render-advice)
 (add-hook 'eww-after-render-hook #'shrface-eww-setup)
 (add-hook 'eww-after-render-hook #'aweww-cleanup-newlines-deferred)
 

@@ -1,10 +1,11 @@
 ;;; aweww.el --- Awesome EWW
 
 ;; TODO
-;; [ ] Improve HTML Rendering Indentation
-;; [ ] Improve Dark / Light Themes
-;; [X] Improve Render New Lines 
-;; [X] Improve Code Highlight Scope
+;; [ ] Improve HTML Render
+;; [ ] Improve Set Themes
+;; [X] Improve EWW Readable
+;; [X] Improve Code Highlight
+
 
 ;; ################
 ;; # EWW / SHR
@@ -20,6 +21,13 @@
 
 ;; Enable EWW Readable
 (add-hook 'eww-after-render-hook #'eww-readable)
+
+;; Set SHR Width
+(defun aweww-set-shr-width (&rest _args)
+  (when (frame-live-p (selected-frame))
+    (when (display-graphic-p (selected-frame))
+      (setq-local shr-width (- (frame-width) (expt 2 3))))))
+(advice-add 'eww-render :before #'aweww-set-shr-width)
 
 
 ;; ################

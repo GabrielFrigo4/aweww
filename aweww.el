@@ -18,7 +18,8 @@
 (require 'shr-tag-pre-highlight)
 
 ;; Enable EWW Readable
-(add-hook 'eww-after-render-hook #'eww-readable)
+(eww-readable)
+;;(add-hook 'eww-after-render-hook #'eww-readable)
 
 
 ;; ################

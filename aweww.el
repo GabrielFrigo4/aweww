@@ -13,23 +13,12 @@
 ;; Require EWW / SHR / DOM
 (require 'eww)
 (require 'shr)
-(require 'dom)
 
 ;; Require Packages
 (require 'shr-tag-pre-highlight)
 
 ;; Enable EWW Readable
 (add-hook 'eww-after-render-hook #'eww-readable)
-
-;; Cleanup New Lines
- (defun aweww-cleanup-newlines ()
-   "Remove Excessive Blank Lines in AWEWW Buffers."
-   (let ((inhibit-read-only t))
-     (save-excursion
-       (goto-char (point-min))
-       (while (re-search-forward "\n\\{3,\\}" nil t)
-         (replace-match "\n\n")))))
- (add-hook 'eww-after-render-hook #'aweww-cleanup-newlines)
 
 
 ;; ################
@@ -42,6 +31,15 @@
 
 ;; Import ElDoc-Box
 (require 'eldoc-box)
+
+;; Cleanup New Lines
+(defun aweww-cleanup-newlines ()
+  "Remove Excessive Blank Lines in AWEWW Buffers."
+  (let ((inhibit-read-only t))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "\n\\{3,\\}" nil t)
+        (replace-match "\n\n")))))
 
 ;; Setup Shrface in EWW
 (defun shrface-eww-setup ()
@@ -79,6 +77,7 @@
 (add-hook 'eww-after-render-hook #'eldoc-mode)
 (add-hook 'eww-after-render-hook #'eldoc-box-hover-mode)
 (add-hook 'eww-after-render-hook #'shrface-eww-setup)
+(add-hook 'eww-after-render-hook #'aweww-cleanup-newlines)
 
 
 ;; ################

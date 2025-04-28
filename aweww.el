@@ -39,9 +39,9 @@
         (replace-match "\n\n")))))
 
 ;; Setup Shrface in EWW
-;;(defun shrface-eww-setup ()
-;;  (unless shrface-toggle-bullets
-;;    (shrface-regexp)))
+(defun shrface-eww-setup ()
+  (unless shrface-toggle-bullets
+    (shrface-regexp)))
 
 ;; Aweww General Rendering
 (defvar aweww-general-rendering-functions
@@ -60,7 +60,6 @@
 
 ;; Aweww Render Advice
 (defun aweww-render-advice (orig-fun &rest args)
-  (require 'eww)
   (let ((shrface-org nil)
         (shr-bullet (concat (char-to-string shrface-item-bullet) " "))
         (shr-width 128)
@@ -71,7 +70,7 @@
 
 ;; Updae EWW Render
 (advice-add 'eww-display-html :around #'aweww-render-advice)
-;;(add-hook 'eww-after-render-hook #'shrface-eww-setup)
+(add-hook 'eww-after-render-hook #'shrface-eww-setup)
 (add-hook 'eww-after-render-hook #'aweww-cleanup-newlines)
 
 

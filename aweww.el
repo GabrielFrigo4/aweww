@@ -26,7 +26,7 @@
 (defun aweww-set-shr-width (&rest _args)
   (when (frame-live-p (selected-frame))
     (when (display-graphic-p (selected-frame))
-      (setq-local shr-width (- (frame-width) (expt 2 3))))))
+      (setq-default shr-width (- (frame-width) (expt 2 3))))))
 (advice-add 'eww-render :before #'aweww-set-shr-width)
 
 

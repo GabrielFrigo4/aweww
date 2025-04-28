@@ -25,18 +25,18 @@
 
 
 ;; Aweww Org Code
-(defvar aweww-org-code-fontify nil
-  "Aweww Org Code Fontify")
+;;(defvar aweww-org-code-fontify nil
+;;  "Aweww Org Code Fontify")
 
 ;; Aweww Trim Code
-(defun aweww-trim-code (string)
-  "Remove Leading and Trailing Lines that Contain only Whitespace, Preserving Internal Formatting."
-  (let* ((lines (split-string string "\n"))
-         (lines (seq-drop-while (lambda (line) (string-match-p "\\`\\s-*\\'" line)) lines))
-         (lines (seq-reverse
-                 (seq-drop-while (lambda (line) (string-match-p "\\`\\s-*\\'" line))
-                                 (seq-reverse lines)))))
-    (mapconcat 'identity lines "\n")))
+;;(defun aweww-trim-code (string)
+;;  "Remove Leading and Trailing Lines that Contain only Whitespace, Preserving Internal Formatting."
+;;  (let* ((lines (split-string string "\n"))
+;;         (lines (seq-drop-while (lambda (line) (string-match-p "\\`\\s-*\\'" line)) lines))
+;;         (lines (seq-reverse
+;;                 (seq-drop-while (lambda (line) (string-match-p "\\`\\s-*\\'" line))
+;;                                 (seq-reverse lines)))))
+;;    (mapconcat 'identity lines "\n")))
 
 ;; Aweww General Rendering
 (defvar aweww-general-rendering-functions
@@ -49,7 +49,7 @@
     (link . eww-tag-link)
     (meta . eww-tag-meta)
     (code . shrface-tag-code)
-    (pre . aweww-shr-tag-pre-highlight))
+    (pre . shr-tag-pre-highlight))
   "Aweww General Rendering Functions")
 
 ;; Aweww Render Advice
@@ -64,41 +64,41 @@
     (apply orig-fun args)))
 
 ;; Aweww TAG Highlight
-(defun aweww-shr-tag-pre-highlight (pre)
-  "Highlighting Code in PRE."
-  (let* ((shr-folding-mode 'none)
-         (shr-current-font 'default)
-         (code (with-temp-buffer
-                 (shr-generic pre)
-                 (indent-rigidly (point-min) (point-max) 0)
-                 (buffer-string)))
-         (lang (or (shr-tag-pre-highlight-guess-language-attr pre)
-                   (let ((sym (language-detection-string code)))
-                     (and sym (symbol-name sym)))))
-         (mode (and lang
-                    (shr-tag-pre-highlight--get-lang-mode lang))))
-    (shr-ensure-newline)
-    (shr-ensure-newline)
-    (setq start (point))
-    (insert
-     (if aweww-org-code-fontify
-         (progn
-           (propertize (concat "#+BEGIN_SRC " lang "\n") 'face 'org-block-begin-line)
-           (or (and (fboundp mode)
-                    (with-demoted-errors "Error while fontifying: %S"
-                      (shr-tag-pre-highlight-fontify (propertize (aweww-trim-code code) 'face 'org-block) mode)))
-               (propertize (aweww-trim-code code) 'face 'org-block))
-           (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line))
-       (aweww-trim-code code)))
-    (shr-ensure-newline)
-    (setq end (point))
-    (pcase (frame-parameter nil 'background-mode)
-      ('light
-       (add-face-text-property start end '(:background (face-background 'default nil t) :extend t)))
-      ('dark
-       (add-face-text-property start end '(:background (face-background 'default nil t) :extend t))))
-    (shr-ensure-newline)
-    (insert "\n")))
+;;(defun aweww-shr-tag-pre-highlight (pre)
+;;  "Highlighting Code in PRE."
+;;  (let* ((shr-folding-mode 'none)
+;;         (shr-current-font 'default)
+;;         (code (with-temp-buffer
+;;                 (shr-generic pre)
+;;                 (indent-rigidly (point-min) (point-max) 0)
+;;                 (buffer-string)))
+;;         (lang (or (shr-tag-pre-highlight-guess-language-attr pre)
+;;                   (let ((sym (language-detection-string code)))
+;;                     (and sym (symbol-name sym)))))
+;;         (mode (and lang
+;;                    (shr-tag-pre-highlight--get-lang-mode lang))))
+;;    (shr-ensure-newline)
+;;    (shr-ensure-newline)
+;;    (setq start (point))
+;;    (insert
+;;     (if aweww-org-code-fontify
+;;         (progn
+;;           (propertize (concat "#+BEGIN_SRC " lang "\n") 'face 'org-block-begin-line)
+;;           (or (and (fboundp mode)
+;;                    (with-demoted-errors "Error while fontifying: %S"
+;;                      (shr-tag-pre-highlight-fontify (propertize (aweww-trim-code code) 'face 'org-block) mode)))
+;;               (propertize (aweww-trim-code code) 'face 'org-block))
+;;           (propertize (concat "#+BEGIN_SRC" "\n") 'face 'org-block-end-line))
+;;       (aweww-trim-code code)))
+;;    (shr-ensure-newline)
+;;    (setq end (point))
+;;    (pcase (frame-parameter nil 'background-mode)
+;;      ('light
+;;       (add-face-text-property start end '(:background (face-background 'default nil t) :extend t)))
+;;      ('dark
+;;       (add-face-text-property start end '(:background (face-background 'default nil t) :extend t))))
+;;    (shr-ensure-newline)
+;;    (insert "\n")))
 
 ;; Updae EWW Render
 (advice-add 'eww-display-html :around #'aweww-render-advice)

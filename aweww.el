@@ -2,8 +2,8 @@
 
 ;; TODO
 ;; [ ] Improve Dark / Light Themes
-;; [ ] Improve HTML Rendering Indentation
-;; [ ] Improve Code Highlight Scope
+;; [X] Improve HTML Rendering Indentation
+;; [X] Improve Code Highlight Scope
 
 ;; ################
 ;; # EWW / SHR
@@ -30,10 +30,10 @@
        (while (re-search-forward "\n\\{3,\\}" nil t)
          (replace-match "\n\n")))))
  (add-hook 'eww-after-render-hook #'aweww-cleanup-newlines)
- 
+
 
 ;; ################
-;; # SHRFACE
+;; # Renders
 ;; ################
 
 
@@ -43,39 +43,24 @@
 ;; Import ElDoc-Box
 (require 'eldoc-box)
 
-;; Setup Aweww Render With Shrface 
-(setq-default aweww-general-rendering-functions
-              (append aweww-general-rendering-functions
-                      shrface-supported-faces-alist))
-
 ;; Setup Shrface in EWW
 (defun shrface-eww-setup ()
   (unless shrface-toggle-bullets
     (shrface-regexp)))
 
-;; Updae EWW Render
-(add-hook 'eww-after-render-hook #'eldoc-mode)
-(add-hook 'eww-after-render-hook #'eldoc-box-hover-mode)
-(add-hook 'eww-after-render-hook #'shrface-eww-setup)
-
-
-;; ################
-;; # Renders
-;; ################
-
-
 ;; Aweww General Rendering
 (defvar aweww-general-rendering-functions
-  '((title . eww-tag-title)
-    (form . eww-tag-form)
-    (input . eww-tag-input)
-    (button . eww-form-submit)
-    (textarea . eww-tag-textarea)
-    (select . eww-tag-select)
-    (link . eww-tag-link)
-    (meta . eww-tag-meta)
-    (code . shrface-tag-code)
-    (pre . shr-tag-pre-highlight))
+  (append '((title . eww-tag-title)
+            (form . eww-tag-form)
+            (input . eww-tag-input)
+            (button . eww-form-submit)
+            (textarea . eww-tag-textarea)
+            (select . eww-tag-select)
+            (link . eww-tag-link)
+            (meta . eww-tag-meta)
+            (code . shrface-tag-code)
+            (pre . shr-tag-pre-highlight))
+          shrface-supported-faces-alist)
   "Aweww General Rendering Functions")
 
 ;; Aweww Render Advice
@@ -91,6 +76,9 @@
 
 ;; Updae EWW Render
 (advice-add 'eww-display-html :around #'aweww-render-advice)
+(add-hook 'eww-after-render-hook #'eldoc-mode)
+(add-hook 'eww-after-render-hook #'eldoc-box-hover-mode)
+(add-hook 'eww-after-render-hook #'shrface-eww-setup)
 
 
 ;; ################

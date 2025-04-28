@@ -48,13 +48,13 @@
 ;; Enable Shrface in AWEWW
 (setq-default shr-external-rendering-functions aweww-general-rendering-functions)
 
-;; Cleanup New Lines
+;; Cleanup Blank New Lines
 (defun aweww-cleanup-newlines ()
   "Remove Excessive Blank Lines in AWEWW Buffers."
   (let ((inhibit-read-only t))
     (save-excursion
       (goto-char (point-min))
-      (while (re-search-forward "\n\\{3,\\}" nil t)
+      (while (re-search-forward "\\(\s*\n\\)\\{3,\\}" nil t)
         (replace-match "\n\n")))))
 
 ;; Cleanup New Lines Deferred

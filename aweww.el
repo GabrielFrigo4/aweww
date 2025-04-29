@@ -2,7 +2,8 @@
 
 ;; TODO
 ;; [ ] Improve HTML Render
-;; [ ] Improve Set Themes
+;; [ ] Improve LaTeX Readable
+;; [ ] Improve Enable Themes
 ;; [X] Improve EWW Readable
 ;; [X] Improve Code Highlight
 

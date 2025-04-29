@@ -3,7 +3,7 @@
 ;; TODO
 ;; [ ] Improve HTML Render
 ;; [ ] Improve LaTeX Readable
-;; [ ] Improve Enable Themes
+;; [X] Improve Face Color Theme
 ;; [X] Improve EWW Readable
 ;; [X] Improve Code Highlight
 
@@ -19,6 +19,20 @@
 
 ;; Require Packages
 (require 'shr-tag-pre-highlight)
+
+;; Setup "Emacs Web Wowser"
+(setq-default browse-url-browser-function 'browse-url-default-browser)
+
+;; Enable Better HTML/CSS/JS Result
+(setq-default url-queue-timeout (expt 2 2))
+(setq-default url-user-agent 'default)
+
+;; Setup "Simple HTML Reader" (SHR)
+(setq-default shr-nbsp ?\u00A0)
+(setq-default shr-inhibit-images nil)
+(setq-default shr-use-fonts nil)
+(setq-default shr-use-colors nil)
+(setq-default shr-width (+ (expt 2 6) (expt 2 4)))
 
 ;; Enable EWW Readable
 (add-hook 'eww-after-render-hook #'eww-readable)

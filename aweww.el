@@ -1,11 +1,30 @@
-;;; aweww.el --- Awesome EWW
+;;; aweww.el --- An "Awesome" EWW Configuration -*- lexical-binding: t; -*-
 
-;; TODO
-;; [ ] Improve HTML Render
-;; [ ] Improve LaTeX Readable
-;; [X] Improve Face Color Theme
-;; [X] Improve EWW Readable
-;; [X] Improve Code Highlight
+;;; Commentary:
+;;
+;; This file provides a set of configurations for the EWW browser
+;; (Emacs Web Wowser) and its SHR (Simple HTML Reader) renderer
+;; to improve readability, code highlighting, and color rendering.
+;;
+;; It uses 'shrface' and 'shr-tag-pre-highlight' to enhance
+;; the appearance of rendered content.
+;;
+;; Key Features:
+;; - Sets dynamic rendering widths based on frame size.
+;; - Cleans up excessive blank lines after rendering.
+;; - Integrates 'shrface' for better syntax highlighting and faces.
+;; - Sets sensible defaults for a better browsing experience.
+
+;;; Code:
+
+;; ################
+;; # Dependencies
+;; ################
+
+
+;; Require Shrface
+(require 'shr-tag-pre-highlight)
+(require 'shrface)
 
 
 ;; ################
@@ -13,18 +32,11 @@
 ;; ################
 
 
-;; Require EWW / SHR / DOM
-(require 'eww)
-(require 'shr)
-
-;; Require Packages
-(require 'shr-tag-pre-highlight)
-
 ;; Setup "Emacs Web Wowser"
 (setq-default browse-url-browser-function 'browse-url-default-browser)
 
 ;; Enable Better HTML/CSS/JS Result
-(setq-default url-queue-timeout (expt 2 2))
+(setq-default url-queue-timeout 4)
 (setq-default url-user-agent 'default)
 
 ;; Setup "Simple HTML Reader" (SHR)
@@ -32,16 +44,22 @@
 (setq-default shr-inhibit-images nil)
 (setq-default shr-use-fonts nil)
 (setq-default shr-use-colors nil)
-(setq-default shr-width (+ (expt 2 6) (expt 2 4)))
+(setq-default shr-width 80)
 
-;; Enable EWW Readable
+;; Enable 'eww-readable' mode after rendering for
+;; better readability and navigation.
 (add-hook 'eww-after-render-hook #'eww-readable)
 
-;; Set SHR Width
+;; Set SHR Width Dynamically
 (defun aweww-set-shr-width (&rest _args)
+  "Adjust 'shr-width' based on the current frame width.
+
+This adjustment is made buffer-locally."
   (when (frame-live-p (selected-frame))
     (when (display-graphic-p (selected-frame))
-      (setq-default shr-width (- (frame-width) (expt 2 3))))))
+      (setq shr-width (- (frame-width) 8)))))
+
+;; Add advice to run *before* 'eww-render'.
 (advice-add 'eww-render :before #'aweww-set-shr-width)
 
 
@@ -50,10 +68,9 @@
 ;; ################
 
 
-;; Import SHRFACE
-(require 'shrface)
-
-;; AWEWW General Rendering
+;; Define the custom rendering functions, combining
+;; standard EWW handlers with 'shrface' faces and
+;; <pre> block highlighting.
 (defvar aweww-general-rendering-functions
   (append '((title . eww-tag-title)
             (form . eww-tag-form)
@@ -66,33 +83,49 @@
             (code . shrface-tag-code)
             (pre . shr-tag-pre-highlight))
           shrface-supported-faces-alist)
-  "Aweww General Rendering Functions")
+  "AWEWW's list of rendering functions for SHR.")
 
-;; Enable Shrface in AWEWW
+;; Tell SHR to use our custom rendering list.
 (setq-default shr-external-rendering-functions aweww-general-rendering-functions)
 
-;; Cleanup Blank New Lines
-(defun aweww-cleanup-newlines ()
-  "Remove Excessive Blank Lines in AWEWW Buffers."
-  (let ((inhibit-read-only t))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "\\(\s*\n\\)\\{3,\\}" nil t)
-        (replace-match "\n\n")))))
 
-;; Cleanup New Lines Deferred
+;; ################
+;; # Hooks
+;; ################
+
+;; Cleanup Excessive Blank Lines
+(defun aweww-cleanup-newlines ()
+  "Remove excessive blank lines in AWEWW buffers.
+
+Replaces three or more newlines with exactly two."
+  (when (eq major-mode 'eww-mode)
+    (let ((inhibit-read-only t))
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "\\(\s*\n\\)\\{3,\\}" nil t)
+          (replace-match "\n\n"))))))
+
+;; Defer Newline Cleanup
 (defun aweww-cleanup-newlines-deferred ()
-  "Defer cleanup until after EWW finishes rendering."
+  "Run newline cleanup after EWW finishes rendering.
+
+Uses a 0-second timer to ensure this runs *after*
+the current rendering process completes."
   (run-at-time 0 nil #'aweww-cleanup-newlines))
 
-;; Setup Shrface in EWW
+;; Setup 'shrface' for EWW
 (defun shrface-eww-setup ()
+  "Configure 'shrface' in the EWW buffer.
+
+Runs 'shrface-regexp' unless 'shrface-toggle-bullets'
+is disabled by the user."
   (unless shrface-toggle-bullets
     (shrface-regexp)))
 
-;; Updae EWW Render
+;; Add hooks to run after EWW renders
 (add-hook 'eww-after-render-hook #'shrface-eww-setup)
 (add-hook 'eww-after-render-hook #'aweww-cleanup-newlines-deferred)
+
 
 ;; ################
 ;; # AWEWW

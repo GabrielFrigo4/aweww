@@ -47,6 +47,6 @@ Se durante a execução de qualquer tarefa o agente identificar qualquer inconfo
 ## 📖 Referências Obrigatórias
 
 - **[ENVIRONMENT.md](ENVIRONMENT.md)**: Arquitetura global do ecossistema
-- **[PRINCIPLES.md](PRINCIPLES.md)**: Os 21 Princípios de Engenharia UNIX + Clean Code
+- **[PRINCIPLES.md](PRINCIPLES.md)**: Os 22 Princípios de Engenharia UNIX + Clean Code
 - **[TODO.md](TODO.md)**: Planejamento estratégico e matriz de status
 - **[.agents/rules/principles.md](.agents/rules/principles.md)**: Regras específicas de engenharia Elisp

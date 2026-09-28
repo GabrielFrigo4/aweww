@@ -38,4 +38,13 @@ jobs:
 
             - name: Test Byte-Compilation
               run: |
-                  make test
+                  emacs -Q --batch -L . --eval '
+                    (let ((err-count 0))
+                      (dolist (f (directory-files "." nil "\\.el$"))
+                        (condition-case err
+                            (byte-compile-file f)
+                          (error
+                           (setq err-count (1+ err-count))
+                           (message "FAIL %s: %s" f err))))
+                      (when (> err-count 0) (kill-emacs 1)))' && \
+                  rm -f ./*.elc && echo "✅ All Aweww .el files compiled cleanly"

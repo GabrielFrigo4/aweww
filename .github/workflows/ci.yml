@@ -1,0 +1,41 @@
+name: Aweww CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+    validate:
+        name: 🔍 Aweww Quality & Compilation
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v7
+
+            - name: Install GNU Emacs
+              uses: purcell/setup-emacs@master
+              with:
+                  version: 30.1
+
+            - name: Validate Shell Scripts
+              run: |
+                  if [ -f "aweww.sh" ]; then
+                    sh -n aweww.sh
+                  fi
+
+            - name: Validate Githooks Syntax
+              run: |
+                  find .githooks -type f -exec sh -n {} +
+
+            - name: Test Byte-Compilation
+              run: |
+                  make test

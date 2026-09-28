@@ -7,6 +7,8 @@
 [![HTML5](https://img.shields.io/badge/HTML-EWW_Reader-orange?logo=html5&logoColor=white)](https://www.gnu.org/software/emacs/manual/html_node/eww/index.html)
 [![CSS3](https://img.shields.io/badge/CSS-Dynamic_Widths-blue?logo=css3&logoColor=white)](aweww.el)
 [![License](https://img.shields.io/badge/License-MIT-green?logo=open-source-initiative&logoColor=white)](LICENSE)
+[![Roadmap](https://img.shields.io/badge/🗺️_Roadmap-TODO.md-teal)](TODO.md)
+[![Contributing](https://img.shields.io/badge/🤝_Contributing-CONTRIBUTING.md-orange)](CONTRIBUTING.md)
 
 ---
 
@@ -123,6 +125,25 @@ Para máxima fidelidade visual, recomenda-se ter instalado:
 
 - [`shrface`](https://github.com/chenyanming/shrface) — Tipografia estruturada com visual de cabeçalhos no padrão Org-mode.
 - [`shr-tag-pre-highlight`](https://github.com/xuchunyang/shr-tag-pre-highlight) — Syntax highlighting automático em blocos de código.
+
+---
+
+## 🚀 Setup do Projeto & Ganchos Git
+
+> 🤝 **Guia de Contribuição:** [CONTRIBUTING.md](CONTRIBUTING.md)
+
+Após clonar o repositório, execute o comando abaixo para ativar os quality gates locais (pre-commit, commit-msg):
+
+```sh
+make hooks
+```
+
+Para validar integridade e rodar a suíte completa de CI localmente:
+
+```sh
+make test    # Validação batch de todos os .el
+make ci      # Pipeline completo (test + compile + clean)
+```
 
 ---
 
